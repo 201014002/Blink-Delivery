@@ -1,9 +1,12 @@
+import 'package:blink_delivery/controller/provider/authProvider/mobileAuthProvider.dart';
+import 'package:blink_delivery/controller/services/authServices/mobileAuthServices.dart';
 import 'package:blink_delivery/utils/colors.dart';
 import 'package:blink_delivery/utils/textStyles.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 class MobileLoginScreen extends StatefulWidget {
@@ -16,6 +19,17 @@ class MobileLoginScreen extends StatefulWidget {
 class _MobileLoginScreenState extends State<MobileLoginScreen> {
   String selectedCountry = '+880';
   TextEditingController mobileController = TextEditingController();
+  bool receiveOTPButtonPressed = false;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        receiveOTPButtonPressed = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -111,30 +125,44 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
             height: 3.h,
           ),
           ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  receiveOTPButtonPressed = true;
+                });
+                context.read<MobileAuthProvider>().updateMobileNumber(
+                    '$selectedCountry${mobileController.text.trim()}');
+                MobileAuthServices.receiveOTP(
+                    context: context,
+                    mobileNo:
+                        '$selectedCountry${mobileController.text.trim()}');
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: black,
                 minimumSize: Size(90.w, 6.h),
               ),
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Next',
-                      style: AppTextStyles.body16.copyWith(color: white),
-                    ),
-                  ),
-                  Positioned(
-                    right: 2.w,
-                    child: Icon(
-                      Icons.arrow_forward,
+              child: receiveOTPButtonPressed
+                  ? CircularProgressIndicator(
                       color: white,
-                      size: 4.h,
-                    ),
-                  ),
-                ],
-              )),
+                    )
+                  : Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Next',
+                            style: AppTextStyles.body16.copyWith(color: white),
+                          ),
+                        ),
+                        Positioned(
+                          right: 2.w,
+                          child: Icon(
+                            Icons.arrow_forward,
+                            color: white,
+                            size: 4.h,
+                          ),
+                        ),
+                      ],
+                    )),
           SizedBox(
             height: 3.w,
           ),
@@ -166,10 +194,15 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
               ),
             ],
           ),
-          SizedBox(height: 2.h,),
+          SizedBox(
+            height: 2.h,
+          ),
           ElevatedButton(
             onPressed: () {},
-            style: ElevatedButton.styleFrom(backgroundColor: white,minimumSize: Size(90.w, 6.h),elevation: 2),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: white,
+                minimumSize: Size(90.w, 6.h),
+                elevation: 2),
             child: Stack(
               children: [
                 Align(
@@ -181,7 +214,11 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                 ),
                 Positioned(
                   left: 2.w,
-                  child: FaIcon(FontAwesomeIcons.google,color: black,size: 3.h,),
+                  child: FaIcon(
+                    FontAwesomeIcons.google,
+                    color: black,
+                    size: 3.h,
+                  ),
                 ),
               ],
             ),

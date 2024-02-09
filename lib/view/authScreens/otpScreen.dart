@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:blink_delivery/controller/provider/authProvider/mobileAuthProvider.dart';
+import 'package:blink_delivery/controller/services/authServices/mobileAuthServices.dart';
 import 'package:blink_delivery/utils/colors.dart';
 import 'package:blink_delivery/utils/textStyles.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 class OTPScreen extends StatefulWidget {
@@ -65,7 +68,9 @@ class _OTPScreenState extends State<OTPScreen> {
             right: 10.w,
             bottom: 3.h,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                MobileAuthServices.verifyOTP(context: context, otp: otpController.text.trim());
+              },
               style: ElevatedButton.styleFrom(
                 shape: StadiumBorder(),
                 padding: EdgeInsets.symmetric(horizontal: 3.w,vertical: 1.h),
@@ -94,7 +99,7 @@ class _OTPScreenState extends State<OTPScreen> {
             height: 2.h,
           ),
           Text(
-            'Enter the 6-digit code sent to you at 01715068753',
+            'Enter the 6-digit code sent to you at ${context.read<MobileAuthProvider>().mobileNumber!}',
             style: AppTextStyles.body16,
           ),
           SizedBox(
